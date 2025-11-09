@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Yo te gusto? 😉</title>
+    <style>
+        /* Estilos CSS */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden; /* Oculta barras de desplazamiento horizontales accidentales */
+            color: #333;
+            /* ADORNO DE FONDO: Degradado y patrón sutil */
+            background: linear-gradient(135deg, #e0f7fa 0%, #fce4ec 100%);
+            background-image: radial-gradient(circle at 100% 150%, #e0f7fa, #fce4ec),
+                              repeating-linear-gradient(135deg, rgba(255,255,255,0.1) 0px, rgba(255,255,255,0.1) 2px, transparent 2px, transparent 5px);
+            background-size: cover, 100px 100px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 90%;
+            width: 90vw; /* AJUSTE CLAVE 1: Usa 90% del ancho del viewport */
+            min-width: 300px; /* Asegura que no sea demasiado pequeño */
+            position: relative;
+            box-sizing: border-box; 
+        }
+
+        .question {
+            font-family: inherit;
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: bold;
+            text-shadow: none;
+        }
+
+        .image-container {
+            margin-bottom: 35px;
+            height: 280px;
+            max-height: 60vw; /* Ajusta la altura de la imagen al ancho del viewport en móviles */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+            object-fit: contain;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px; /* Reducimos ligeramente el espacio entre botones */
+            margin-top: 25px;
+            position: relative;
+            min-height: 120px;
+        }
+
+        .btn {
+            padding: 14px 28px; /* Reducimos ligeramente el padding inicial */
+            font-size: 1.5em; /* AJUSTE CLAVE 2: Reducimos el tamaño de fuente inicial */
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease, font-size 0.3s ease, padding 0.3s ease;
+            white-space: nowrap;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+
+        .btn-si {
+            background-color: #4CAF50; /* Verde */
+            color: white;
+            z-index: 10;
+        }
+
+        .btn-no {
+            background-color: #F44336; /* Rojo */
+            color: white;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Clases para agrandar el botón 'Sí' y reducir el 'No' (TAMAÑOS ADAPTADOS) */
+        .btn-si.size-1 { font-size: 1.9em; padding: 20px 40px; }
+        .btn-si.size-2 { font-size: 2.4em; padding: 25px 50px; }
+        .btn-si.size-3 { font-size: 3.0em; padding: 30px 60px; }
+        .btn-si.size-4 { font-size: 3.5em; padding: 35px 70px; }
+        .btn-si.size-5 { font-size: 4.0em; padding: 40px 80px; }
+        
+        .btn-no.size-decrease-1 { font-size: 1.2em; padding: 12px 25px; } 
+        .btn-no.size-decrease-2 { font-size: 1.0em; padding: 10px 20px; } 
+        .btn-no.size-decrease-3 { font-size: 0.8em; padding: 8px 15px; } 
+        .btn-no.size-decrease-4 { font-size: 0.6em; padding: 6px 12px; } 
+
+        /* Estilos para la última fase (botón único escurridizo) */
+        .last-phase .buttons-container { min-height: 250px; }
+        .last-phase .btn-si {
+            background-color: #03a9f4; /* Celeste */
+            font-size: 1.5em; /* Mantiene el tamaño inicial móvil */
+            padding: 14px 28px;
+            position: absolute; 
+            left: 50%; top: 50%;
+            transform: translate(-50%, -50%);
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .last-phase .btn-no { display: none; }
+
+        /* ESTILOS PARA LA FASE DE FELICITACIÓN (SÍ) */
+        .success-phase .question {
+            font-size: 3.5em; /* Ligeramente más pequeño para móvil */
+            color: #4CAF50; 
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            line-height: 1.2;
+        }
+        .success-phase .message {
+            font-size: 2em; /* Ligeramente más pequeño para móvil */
+            color: #d81b60; 
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .success-phase .image-container {
+            height: 300px; 
+            max-height: 70vw;
+        }
+        .success-phase .buttons-container {
+            display: none; 
+        }
+
+        /* MEDIA QUERIES: Ajustes específicos para pantallas muy pequeñas (opcional, pero mejora) */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+                width: 95vw;
+            }
+            .question {
+                font-size: 2em;
+            }
+            .btn {
+                font-size: 1.3em;
+                padding: 12px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="gameContainer">
+        <div id="mainContent">
+            <div class="image-container">
+                <img id="questionImage" src="URL_IMAGEN_FASE_1" alt="Imagen de la pregunta">
+            </div>
+            <p class="question" id="questionText">¿Yo te gusto?</p>
+            <div class="buttons-container">
+                <button class="btn btn-si" id="btnSi">Sí</button>
+                <button class="btn btn-no" id="btnNo">No</button>
+            </div>
+        </div>
+
+        <div id="successContent" style="display: none;">
+            <p class="question">¡Sabía que síii!</p>
+            <p class="message">¡Vos también me gustas Delfi :)! ❤️</p>
+            <div class="image-container">
+                <img id="successGif" src="gato.gif" alt="GIF de celebración" style="max-height: 100%; max-width: 100%; border-radius: 10px;">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // El código JavaScript no necesita cambios, mantiene toda la lógica.
+        const questionImage = document.getElementById('questionImage');
+        const questionText = document.getElementById('questionText');
+        const btnSi = document.getElementById('btnSi');
+        const btnNo = document.getElementById('btnNo');
+        const gameContainer = document.getElementById('gameContainer');
+        const buttonsContainer = document.querySelector('.buttons-container');
+        const mainContent = document.getElementById('mainContent');
+        const successContent = document.getElementById('successContent');
+
+        let phase = 0;
+        const phases = [
+            { image: "gatofeliz.jpg", question: "¿Yo te gusto?", siText: "Sí", noText: "No", siClass: "", noClass: "" },
+            { image: "gatorisa.jpg", question: "¿Yo te gusto?", siText: "Sí", noText: "¿Segura que no te gusto?", siClass: "size-1", noClass: "" },
+            { image: "perrofeliz.jpg", question: "¿Yo te gusto?", siText: "Sí", noText: "¿Ni un poquito?", siClass: "size-2", noClass: "size-decrease-1" },
+            { image: "gatogota.jpg", question: "¿Yo te gusto?", siText: "Sí", noText: "¿Ni cuando te hago reír?", siClass: "size-3", noClass: "size-decrease-2" },
+            { image: "perroduda.jpg", question: "¿Yo te gusto?", siText: "Sí", noText: "¿Ni cuando te doy abrazos?", siClass: "size-4", noClass: "size-decrease-3" },
+            { image: "gatosensual.jpg", question: "¿Yo te gusto?", siText: "Sí", noText: "¿Ni cuando te doy besos?", siClass: "size-5", noClass: "size-decrease-4" },
+            { image: "perrosad.jpg", question: "¿Estás segura Delfi?", siText: "Sí, estoy segura", noText: "", siClass: "", isLastPhase: true }
+        ];
+
+        function showSuccessPhase() {
+            mainContent.style.display = 'none';
+            successContent.style.display = 'block';
+            gameContainer.classList.add('success-phase');
+        }
+
+        function handleSiClick() {
+            showSuccessPhase(); 
+        }
+
+        btnNo.addEventListener('click', () => {
+            phase++;
+            if (phase < phases.length) {
+                updatePhase();
+            } else {
+                alert("¡Incluso después de todo esto, sigues diciendo que no! Parece que no le gusto a Delfi :(");
+                phase = 0; 
+                updatePhase();
+            }
+        });
+
+        function moveSiButton(event) {
+            const containerRect = buttonsContainer.getBoundingClientRect(); 
+            const btnRect = btnSi.getBoundingClientRect();
+
+            let newX, newY;
+            const padding = 10; 
+
+            newX = Math.random() * (containerRect.width - btnRect.width - 2 * padding) + padding;
+            newY = Math.random() * (containerRect.height - btnRect.height - 2 * padding) + padding;
+
+            btnSi.style.left = `${newX}px`;
+            btnSi.style.top = `${newY}px`;
+            btnSi.style.transform = 'translate(0, 0)';
+
+            event.stopPropagation(); 
+            event.preventDefault(); 
+        }
+
+        function updatePhase() {
+            if (phase >= phases.length) return;
+
+            const currentPhase = phases[phase];
+
+            mainContent.style.display = 'block';
+            successContent.style.display = 'none';
+            gameContainer.classList.remove('success-phase');
+            
+            questionImage.src = currentPhase.image;
+            questionText.textContent = currentPhase.question;
+            btnSi.textContent = currentPhase.siText;
+            btnNo.textContent = currentPhase.noText;
+
+            btnSi.className = "btn btn-si";
+            if (currentPhase.siClass) btnSi.classList.add(currentPhase.siClass);
+            btnNo.className = "btn btn-no";
+            if (currentPhase.noClass) btnNo.classList.add(currentPhase.noClass);
+
+            if (currentPhase.isLastPhase) {
+                gameContainer.classList.add('last-phase');
+                btnSi.removeEventListener('click', handleSiClick); 
+                btnSi.addEventListener('click', moveSiButton); 
+                btnSi.addEventListener('mouseover', moveSiButton);
+                btnNo.style.display = 'none'; 
+                btnSi.style.position = 'absolute';
+                btnSi.style.left = '50%';
+                btnSi.style.top = '50%';
+                btnSi.style.transform = 'translate(-50%, -50%)';
+            } else {
+                gameContainer.classList.remove('last-phase');
+                btnNo.style.display = 'block'; 
+                btnSi.style.position = 'relative';
+                btnSi.style.left = 'auto';
+                btnSi.style.top = 'auto';
+                btnSi.style.transform = 'none'; 
+                btnSi.removeEventListener('click', moveSiButton);
+                btnSi.removeEventListener('mouseover', moveSiButton);
+                btnSi.addEventListener('click', handleSiClick); 
+            }
+        }
+
+        updatePhase();
+    </script>
+</body>
+</html>
